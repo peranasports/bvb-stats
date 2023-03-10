@@ -47,9 +47,9 @@ function StatsPanel({ match, selectedSet }) {
       <div className="flex justify-between gap-2">
         {matchStats &&
           getStats().map((stats, idx) => (
-            <div className="flex">
+            <div className="flex" key={idx}>
               <div className="flex-col">
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center">
                   <div className="shadow">
                     <img
                       className="shadow w-8 h-8"
@@ -64,105 +64,105 @@ function StatsPanel({ match, selectedSet }) {
                   <p className="mt-1 text-xl font-bold">{idx === 0 ? match.teamA.code : match.teamB.code}</p>
                 </div>
                 <div className="stats stats-vertical shadow">
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Sideout %</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {getPercentString(stats.SideOuts, stats.SideoutTotal)}
                     </div>
-                    <div className="stat-desc">
+                    <div className="stat-desc text-warning">
                       {stats.SideOuts}/{stats.SideoutTotal}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Sideout Error %</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {getPercentString(
                         stats.SideOutErrors,
                         stats.SideoutTotal
                       )}
                     </div>
-                    <div className="stat-desc">
+                    <div className="stat-desc text-warning">
                       {stats.SideOutErrors}/{stats.SideoutTotal}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Point %</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {getPercentString(stats.BreakPoints, stats.ServeTotal)}
                     </div>
-                    <div className="stat-desc">
+                    <div className="stat-desc text-warning">
                       {stats.BreakPoints}/{stats.ServeTotal}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Sideout 1st Phase %</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {getPercentString(
                         stats.SideOutFirstBalls,
                         stats.SideoutTotal
                       )}
                     </div>
-                    <div className="stat-desc">
+                    <div className="stat-desc text-warning">
                       {stats.SideOutFirstBalls}/{stats.SideoutTotal}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Sideout On 2 Kill %</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {getPercentString(
                         stats.SideOutOn2Kills,
                         stats.SideOutOn2s
                       )}
                     </div>
-                    <div className="stat-desc">
+                    <div className="stat-desc text-warning">
                       {stats.SideOutOn2Kills}/{stats.SideOutOn2s}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Plus</div>
-                    <div className="stat-value">{stats.Plus}</div>
+                    <div className="stat-value text-3xl text-info">{stats.Plus}</div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Minus</div>
-                    <div className="stat-value">{stats.Minus}</div>
+                    <div className="stat-value text-3xl text-info">{stats.Minus}</div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Pass Average</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {stats.PassAverage.toFixed(2)}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Block</div>
-                    <div className="stat-value">{stats.Blck3}</div>
+                    <div className="stat-value text-3xl text-info">{stats.Blck3}</div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Dig</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {stats.Dig3 + stats.Dig2 + stats.Dig1}
                     </div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Serve Ace</div>
-                    <div className="stat-value">{stats.Serve3}</div>
+                    <div className="stat-value text-3xl text-info">{stats.Serve3}</div>
                   </div>
 
-                  <div className="stat">
+                  <div className="stat place-items-center">
                     <div className="stat-title">Positive Serve</div>
-                    <div className="stat-value">
+                    <div className="stat-value text-3xl text-info">
                       {getPercentString(stats.PositiveServe, stats.ServeTotal)}
                     </div>
-                    <div className="stat-desc">
+                    <div className="stat-desc text-warning">
                       {stats.PositiveServe}/{stats.ServeTotal}
                     </div>
                   </div>

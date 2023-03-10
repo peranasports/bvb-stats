@@ -51,10 +51,10 @@ function Team() {
   return (
     <>
     <div className="flex">
-        <div className="w-[30vw]">
+        <div className="w-[30vw] my-4">
             <MatchList team={team} onMatchSelected={(m) => onMatchSelected(m)}/>
         </div>
-        <div className="w-[60vw]">
+        <div className="w-[60vw] my-4">
             <TeamDetail team={team} />
         </div>
     </div>
