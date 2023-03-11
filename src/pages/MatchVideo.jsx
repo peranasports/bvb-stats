@@ -7,6 +7,7 @@ import Select from "react-select";
 import BVBStatsContext from "../context/BVBStatsContext";
 import { updateMatchVideoOffset } from "../context/BVBStatsAction";
 import StatsPanel from "../components/panels/StatsPanel";
+import StatsRalliesList from "../components/panels/StatsRalliesList";
 
 function MatchVideo() {
   const navigate = useNavigate();
@@ -24,9 +25,7 @@ function MatchVideo() {
   } = location.state;
   const [videoUrl, setVideoUrl] = useState(null);
   const [videoName, setVideoName] = useState(null);
-  const [selectedStatsSet, setSelectedStatsSet] = useState(
-    match.games.length + 1
-  );
+  const [selectedStatsSet, setSelectedStatsSet] = useState(0);
   const [selectedSet, setSelectedSet] = useState(1);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [startVideoTime, setStartVideoTime] = useState(null);
@@ -39,6 +38,8 @@ function MatchVideo() {
   const [selectedTeamAPlayers, setSelectedTeamAPlayers] = useState(null);
   const [selectedTeamBPlayers, setSelectedTeamBPlayers] = useState(null);
   const [showStats, setShowStats] = useState(false);
+  const [showStatsRallies, setShowStatsRallies] = useState(false);
+  const [statsRallies, setStatsRallies] = useState([]);
   const [, forceUpdate] = useState(0);
 
   const eventTypes = [
@@ -69,6 +70,11 @@ function MatchVideo() {
     }
   };
 
+  const doShowRallies = (obj) => {
+    setStatsRallies(obj);
+    setShowStatsRallies(true);
+  };
+
   const doSelectEvent = (ev) => {
     setSelectedEvent(ev);
 
@@ -86,6 +92,7 @@ function MatchVideo() {
 
   const onStats = (vobj) => {
     const ss = !showStats;
+    setShowStatsRallies(false)
     setShowStats(ss);
   };
 
@@ -99,7 +106,7 @@ function MatchVideo() {
     const voffset = playerRef.current.getCurrentTime();
     match.videoOffset = Number.parseInt(currentEventTime - voffset);
 
-    dispatch({ type: "SET_LOADING" });
+    dispatch({ type: "SET_LOADING", payload: { message: "" } });
     var ret = updateMatchVideoOffset(match.id, match.videoOffset);
     dispatch({ type: "UPDATE_MATCH_VIDEO_OFFSET", payload: ret });
 
@@ -277,6 +284,17 @@ function MatchVideo() {
         <div className="flex-col w-100">
           {showStats ? (
             <div className="btn-group  mr-4">
+                            <button
+                className={
+                  selectedStatsSet === 0
+                    ? "btn btn-sm bg-gray-600 hover:btn-gray-900 btn-active"
+                    : "btn btn-sm bg-gray-600 hover:btn-gray-900"
+                }
+                key={0}
+                onClick={() => doSelectStatsSet(0)}
+              >
+                Match
+              </button>
               {match.games.map((s, idx2) => (
                 <button
                   className={
@@ -290,17 +308,6 @@ function MatchVideo() {
                   Set {idx2 + 1}
                 </button>
               ))}
-              <button
-                className={
-                  selectedStatsSet === match.games.length + 1
-                    ? "btn btn-sm bg-gray-600 hover:btn-gray-900 btn-active"
-                    : "btn btn-sm bg-gray-600 hover:btn-gray-900"
-                }
-                key={match.games.length + 1}
-                onClick={() => doSelectStatsSet(match.games.length + 1)}
-              >
-                Match
-              </button>
             </div>
           ) : (
             <div className="btn-group  mr-4">
@@ -323,7 +330,23 @@ function MatchVideo() {
             <div className="flex-col w-[30vw] h-90 overflow-y-auto">
               {showStats ? (
                 <div className="flex-col">
-                  <StatsPanel match={match} selectedSet={selectedStatsSet} />
+                  {showStatsRallies ? (
+                    <StatsRalliesList
+                      rallies={statsRallies.rallies}
+                      events={statsRallies.events}
+                      team={statsRallies.team}
+                      title={statsRallies.title}
+                      selectedGame={selectedStatsSet}
+                      doSelectEvent={(ev) => doSelectEvent(ev)}
+                      doClose={() => setShowStatsRallies(false)}
+                    />
+                  ) : (
+                    <StatsPanel
+                      match={match}
+                      selectedSet={selectedStatsSet}
+                      doShowRallies={(evs) => doShowRallies(evs)}
+                    />
+                  )}
                 </div>
               ) : (
                 <div className="w-[30vw]">

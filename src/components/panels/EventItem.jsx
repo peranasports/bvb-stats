@@ -39,9 +39,18 @@ function EventItem({ event, isSelected, onEventSelected }) {
             {event.player === undefined ? (
               <></>
             ) : (
-              <p className="pl-2 text-md font-semibold">
-                {event.player.firstName} {event.player.lastName.toUpperCase()}
-              </p>
+              <div className="flex ml-2">
+                <div className="shadow">
+                  <img
+                    className="shadow w-6 h-6"
+                    src={require(`../assets/flags/${event.player.countryCode}.png`)}
+                    alt="Profile"
+                  />
+                </div>
+                <p className="pl-2 text-md font-semibold">
+                  {event.player.firstName} {event.player.lastName.toUpperCase()}
+                </p>
+              </div>
             )}
           </div>
         ) : (
@@ -49,9 +58,18 @@ function EventItem({ event, isSelected, onEventSelected }) {
             {event.player === undefined ? (
               <></>
             ) : (
-              <p className="pr-2 text-md font-semibold">
-                {event.player.firstName} {event.player.lastName.toUpperCase()}
-              </p>
+              <div className="flex justify-end mr-2">
+                <p className="pr-2 text-md font-semibold">
+                  {event.player.firstName} {event.player.lastName.toUpperCase()}
+                </p>
+                <div className="shadow">
+                  <img
+                    className="shadow w-6 h-6"
+                    src={require(`../assets/flags/${event.player.countryCode}.png`)}
+                    alt="Profile"
+                  />
+                </div>
+              </div>
             )}
           </div>
         )}
@@ -61,7 +79,8 @@ function EventItem({ event, isSelected, onEventSelected }) {
             {eventGradeString(event)}
           </p>
           <p className="pr-2 pb-2 text-md">
-            ({event.game.gameNumber}) {event.teamScore}-{event.oppositionScore}
+            ({event.game.gameNumber === undefined ? "" : event.game.gameNumber}){" "}
+            {event.teamScore}-{event.oppositionScore}
           </p>
         </div>
       </div>

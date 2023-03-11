@@ -23,7 +23,7 @@ function Team() {
     }
 
     useEffect(() => {
-        dispatch({ type: 'SET_LOADING' })
+        dispatch({ type: 'SET_LOADING', payload: {message:""} })
         const getMatchesData = async () => {
             const matchesData = await getMatchesForTeam(team.id)
             dispatch({ type: 'GET_MATCHES_FOR_TEAM', payload: matchesData })

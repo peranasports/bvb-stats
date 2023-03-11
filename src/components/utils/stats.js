@@ -34,32 +34,32 @@ const kSubstitution = 250;
 const kSkillOppositionServe = 401;
 const kSkillOppositionSpike = 404;
 
-var homeSideouts = [];
-var homeSideoutErrors = [];
-var homeSideoutFirstBalls = [];
-var homeSideoutTransitions = [];
-var homeSideoutOn2s = [];
-var homePoints = [];
-var homePlus = [];
-var homeMinus = [];
-var homePassAverage = [];
-var homeBlocks = [];
-var homeDigs = [];
-var homeAces = [];
-var homeServes = [];
-var awaySideouts = [];
-var awaySideoutErrors = [];
-var awaySideoutFirstBalls = [];
-var awaySideoutTransitions = [];
-var awaySideoutOn2s = [];
-var awayPoints = [];
-var awayPlus = [];
-var awayMinus = [];
-var awayPassAverage = [];
-var awayBlocks = [];
-var awayDigs = [];
-var awayAces = [];
-var awayServes = [];
+// var homeSideouts = [];
+// var homeSideoutErrors = [];
+// var homeSideoutFirstBalls = [];
+// var homeSideoutTransitions = [];
+// var homeSideoutOn2s = [];
+// var homePoints = [];
+// var homePlus = [];
+// var homeMinus = [];
+// var homePassAverage = [];
+// var homeBlocks = [];
+// var homeDigs = [];
+// var homeAces = [];
+// var homeServes = [];
+// var awaySideouts = [];
+// var awaySideoutErrors = [];
+// var awaySideoutFirstBalls = [];
+// var awaySideoutTransitions = [];
+// var awaySideoutOn2s = [];
+// var awayPoints = [];
+// var awayPlus = [];
+// var awayMinus = [];
+// var awayPassAverage = [];
+// var awayBlocks = [];
+// var awayDigs = [];
+// var awayAces = [];
+// var awayServes = [];
 
 export function ralliesForSet(d) {
   var events = d.events;
@@ -101,7 +101,7 @@ export function ralliesForSet(d) {
 function createRally(evs) {
   var lastevent = evs[evs.length - 1];
   var r = {
-    setNumber: lastevent.game.gameNumber,
+    gameNumber: lastevent.game.gameNumber,
     homeScore: lastevent.teamScore,
     awayScore: lastevent.oppositionScore,
     blockEvents: [],
@@ -241,30 +241,47 @@ export function calculateStatsForSet(d, match) {
 
   var rallies = ralliesForSet(d);
 
-  var dic = doCalculateStatsForRallies(rallies, selAps, selBps);
+  var dic = doCalculateStatsForRallies(rallies, selAps, selBps, match);
   var sih = dic["HOME"];
   for (var pl of selAps) {
     var si = dic[pl.guid];
     si.gamesPlayed++;
     addStats(sih, si);
-    si.PassAverage = si.PassTotal === 0 ? 0 : (si.Pass1 + si.Pass2 * 2 + si.Pass3 * 3 + si.Pass05 * 0.5) / si.PassTotal
+    si.PassAverage =
+      si.PassTotal === 0
+        ? 0
+        : (si.Pass1 + si.Pass2 * 2 + si.Pass3 * 3 + si.Pass05 * 0.5) /
+          si.PassTotal;
   }
-  sih.PassAverage = sih.PassTotal === 0 ? 0 : (sih.Pass1 + sih.Pass2 * 2 + sih.Pass3 * 3 + sih.Pass05 * 0.5) / sih.PassTotal
+  sih.PassAverage =
+    sih.PassTotal === 0
+      ? 0
+      : (sih.Pass1 + sih.Pass2 * 2 + sih.Pass3 * 3 + sih.Pass05 * 0.5) /
+        sih.PassTotal;
 
   var sia = dic["AWAY"];
   for (var pl of selBps) {
     var si = dic[pl.guid];
     si.gamesPlayed++;
     addStats(sia, si);
-    si.PassAverage = si.PassTotal === 0 ? 0 : (si.Pass1 + si.Pass2 * 2 + si.Pass3 * 3 + si.Pass05 * 0.5) / si.PassTotal
+    si.PassAverage =
+      si.PassTotal === 0
+        ? 0
+        : (si.Pass1 + si.Pass2 * 2 + si.Pass3 * 3 + si.Pass05 * 0.5) /
+          si.PassTotal;
   }
-  sia.PassAverage = sia.PassTotal === 0 ? 0 : (sia.Pass1 + sia.Pass2 * 2 + sia.Pass3 * 3 + sia.Pass05 * 0.5) / sia.PassTotal
+  sia.PassAverage =
+    sia.PassTotal === 0
+      ? 0
+      : (sia.Pass1 + sia.Pass2 * 2 + sia.Pass3 * 3 + sia.Pass05 * 0.5) /
+        sia.PassTotal;
   return { homeStats: sih, awayStats: sia };
 }
 
-function doCalculateStatsForRallies(rallies, selAps, selBps) {
+function doCalculateStatsForRallies(rallies, selAps, selBps, match) {
   var dic = {};
   var siHome = initStatsItem();
+  siHome.Team = match.teamA;
   dic["HOME"] = siHome;
   for (const pl of selAps) {
     var si = initStatsItem();
@@ -274,6 +291,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
     }
   }
   var siAway = initStatsItem();
+  siAway.Team = match.teamB;
   dic["AWAY"] = siAway;
   for (const pl of selBps) {
     var si = initStatsItem();
@@ -297,15 +315,19 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
     // }
     if (selAps.includes(r.serveEvent.player)) {
       // r.serveEvent.isHomePossession)
-      var si = r.passEvent !== undefined ? dic[r.passEvent.player.guid] : siAway;
+      var si =
+        r.passEvent !== undefined ? dic[r.passEvent.player.guid] : siAway;
       hserve++;
       // var s = "Away #%d %d-%d S%@ - %@ ", hserve, r.homeScore, r.awayScore, r.serveEvent.game.gameNumber, r.serveEvent.player.NickName];
       // if (r.passEvent === undefined)
       // {
       //   continue
       // }
-      if ((r.passEvent !== undefined && selBps.includes(r.passEvent.player)) ||
-      r.serveEvent.eventGrade === 0 || r.serveEvent.eventGrade === 3) {
+      if (
+        (r.passEvent !== undefined && selBps.includes(r.passEvent.player)) ||
+        r.serveEvent.eventGrade === 0 ||
+        r.serveEvent.eventGrade === 3
+      ) {
         if (r.serveEvent.eventGrade === 0 && selBps.length !== 2) {
         } else {
           si.SideoutTotal++;
@@ -317,10 +339,10 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
         if (r.serveEvent.eventGrade === 0 && selBps.length !== 2) {
         } else {
           si.SideOuts++;
-          awaySideouts.push(r);
+          si.listSideouts.push(r);
           if (r.sideoutFirstBall) {
             si.SideOutFirstBalls++;
-            awaySideoutFirstBalls.push(r);
+            si.listSideoutFirstBalls.push(r);
           }
           if (r.sideoutSpikeKill) {
             si.SideOutFirstBallKills++;
@@ -340,7 +362,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             (laste.outcome === -1 || laste.isOppositionError) &&
             laste.isPointFive === false
           ) {
-            awaySideoutErrors.push(r);
+            si.listSideoutErrors.push(r);
             si.SideOutErrors++;
           }
           var thisserver = r.serveEvent.player;
@@ -348,22 +370,26 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             var sih = dic[r.serveEvent.player.guid];
             sih.BreakPoints++;
           }
-          homePoints.push(r);
+          si.listPoints.push(r);
           // [s appendFormat:@"Sideoout Fail #%d", (int)si.SideOutFails];
         }
       }
       //            NSLog(@"%@", s);
     } else if (selBps.includes(r.serveEvent.player)) {
       // r.serveEvent.isAwayPossession)
-      var si = r.passEvent !== undefined ? dic[r.passEvent.player.guid] : siHome;
+      var si =
+        r.passEvent !== undefined ? dic[r.passEvent.player.guid] : siHome;
       aserve++;
       // var s = [NSMutableString stringWithFormat:@"Home #%d %d-%d S%@ - %@ Serves ", aserve, r.homeScore, r.awayScore, r.serveEvent.game.gameNumber, r.serveEvent.player.NickName];
       // if (r.passEvent === undefined)
       // {
       //   continue
       // }
-      if ((r.passEvent !== undefined && selAps.includes(r.passEvent.player)) ||
-        r.serveEvent.eventGrade === 0 || r.serveEvent.eventGrade === 3) {
+      if (
+        (r.passEvent !== undefined && selAps.includes(r.passEvent.player)) ||
+        r.serveEvent.eventGrade === 0 ||
+        r.serveEvent.eventGrade === 3
+      ) {
         if (r.serveEvent.eventGrade === 0 && selAps.length !== 2) {
         } else {
           si.SideoutTotal++;
@@ -377,10 +403,10 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
         if (r.serveEvent.eventGrade === 0 && selAps.length !== 2) {
         } else {
           si.SideOuts++;
-          homeSideouts.push(r);
+          si.listSideouts.push(r);
           if (r.sideoutFirstBall) {
             si.SideOutFirstBalls++;
-            homeSideoutFirstBalls.push(r);
+            si.listSideoutFirstBalls.push(r);
           }
           if (r.sideoutSpikeKill) {
             si.SideOutFirstBallKills++;
@@ -400,7 +426,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             laste.outcome === -1 &&
             laste.isPointFive === false
           ) {
-            homeSideoutErrors.push(r);
+            si.listSideoutErrors.push(r);
             si.SideOutErrors++;
           }
           var thisserver = r.serveEvent.player;
@@ -408,7 +434,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             var sia = dic[r.serveEvent.player.guid];
             sia.BreakPoints++;
           }
-          awayPoints.push(r);
+          si.listPoints.push(r);
           // [s appendFormat:@"- %@ Sideoout Fail #%d", r.passEvent.player.NickName, (int)si.SideOutFails];
         }
       }
@@ -433,23 +459,23 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
           si.ServeTotal++;
           if (grade === 0) {
             si.Serve0++;
-            homeMinus.push(r);
+            si.listMinus.push(ev);
           } else if (grade === 1) si.Serve1++;
           else if (grade === 2) {
             si.Serve2++;
-            homeServes.push(r);
+            si.listServes.push(ev);
           } else if (grade === 3) {
             si.Serve3++;
-            homeServes.push(r);
-            homeAces.push(r);
-            homePlus.push(r);
+            si.listServes.push(ev);
+            si.listAces.push(ev);
+            si.listPlus.push(ev);
           }
         } else if (skill === kSkillPass) {
           si.PassTotal++;
           if (grade === 0) {
             if (et === 1) si.Pass05++;
             else si.Pass0++;
-            homeMinus.push(r);
+            si.listMinus.push(ev);
           } else if (grade === 1) si.Pass1++;
           else if (grade === 2) si.Pass2++;
           else if (grade === 3) si.Pass3++;
@@ -459,14 +485,14 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (et === 1) si.Blck05++;
             else {
               si.Blck0++;
-              homeMinus.push(r);
+              si.listMinus.push(ev);
             }
           } else if (grade === 1) si.Blck1++;
           else if (grade === 2) si.Blck2++;
           else if (grade >= 3) {
             si.Blck3++;
-            homeBlocks.push(r);
-            homePlus.push(r);
+            si.listBlocks.push(ev);
+            si.listPlus.push(ev);
           }
         } else if (skill === kSkillSpike) {
           if (r.serveEvent.isHomePossession) {
@@ -478,7 +504,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
           }
           if (grade === 0) {
             si.Spike0++;
-            homeMinus.push(r);
+            si.listMinus.push(ev);
             if (inFirstPhase === false) {
               si.TransSpike0++;
             }
@@ -497,7 +523,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (inFirstPhase === false) {
               si.TransSpike3++;
             }
-            homePlus.push(r);
+            si.listPlus.push(ev);
           }
           if (r.serveEvent.isAwayPossession) {
             if (inFirstPhase) {
@@ -507,6 +533,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
               si.SideOutOn2s++;
               if (ev.eventGrade === 3) {
                 si.SideOutOn2Kills++;
+                si.listSideoutOn2s.push(r);
               }
             }
           }
@@ -516,17 +543,17 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (et === 1) si.Dig05++;
             else {
               si.Dig0++;
-              homeMinus.push(r);
+              si.listMinus.push(ev);
             }
           } else if (grade === 1) {
             si.Dig1++;
-            homeDigs.push(r);
+            si.listDigs.push(ev);
           } else if (grade === 2) {
             si.Dig2++;
-            homeDigs.push(r);
+            si.listDigs.push(ev);
           } else if (grade === 3) {
             si.Dig3++;
-            homeDigs.push(r);
+            si.listDigs.push(ev);
           }
         }
       } else if (selBps.includes(ev.player)) {
@@ -539,23 +566,23 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
           si.ServeTotal++;
           if (grade === 0) {
             si.Serve0++;
-            awayMinus.push(r);
+            si.listMinus.push(ev);
           } else if (grade === 1) si.Serve1++;
           else if (grade === 2) {
             si.Serve2++;
-            awayServes.push(r);
+            si.listServes.push(ev);
           } else if (grade === 3) {
             si.Serve3++;
-            awayServes.push(r);
-            awayAces.push(r);
-            awayPlus.push(r);
+            si.listServes.push(ev);
+            si.listAces.push(ev);
+            si.listPlus.push(ev);
           }
         } else if (skill === kSkillPass) {
           si.PassTotal++;
           if (grade === 0) {
             if (et === 1) si.Pass05++;
             else si.Pass0++;
-            awayMinus.push(r);
+            si.listMinus.push(ev);
           } else if (grade === 1) si.Pass1++;
           else if (grade === 2) si.Pass2++;
           else if (grade === 3) si.Pass3++;
@@ -565,14 +592,14 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (et === 1) si.Blck05++;
             else {
               si.Blck0++;
-              awayMinus.push(r);
+              si.listMinus.push(ev);
             }
           } else if (grade === 1) si.Blck1++;
           else if (grade === 2) si.Blck2++;
           else if (grade >= 3) {
             si.Blck3++;
-            awayBlocks.push(r);
-            awayPlus.push(r);
+            si.listBlocks.push(ev);
+            si.listPlus.push(ev);
           }
         } else if (skill === kSkillSpike) {
           if (r.serveEvent.isAwayPossession) {
@@ -587,7 +614,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (inFirstPhase === false) {
               si.TransSpike0++;
             }
-            awayMinus.push(r);
+            si.listMinus.push(ev);
           } else if (grade === 1) {
             si.Spike1++;
             if (inFirstPhase === false) {
@@ -603,7 +630,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (inFirstPhase === false) {
               si.TransSpike3++;
             }
-            awayPlus.push(r);
+            si.listPlus.push(ev);
           }
           if (r.serveEvent.isHomePossession) {
             if (inFirstPhase) {
@@ -613,6 +640,7 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
               si.SideOutOn2s++;
               if (ev.eventGrade === 3) {
                 si.SideOutOn2Kills++;
+                si.listSideoutOn2s.push(r);
               }
             }
           }
@@ -622,27 +650,27 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
             if (et === 1) si.Dig05++;
             else {
               si.Dig0++;
-              awayMinus.push(r);
+              si.listMinus.push(ev);
             }
           } else if (grade === 1) {
             si.Dig1++;
-            awayDigs.push(r);
+            si.listDigs.push(ev);
           } else if (grade === 2) {
             si.Dig2++;
-            awayDigs.push(r);
+            si.listDigs.push(ev);
           } else if (grade === 3) {
             si.Dig3++;
-            awayDigs.push(r);
+            si.listDigs.push(ev);
           }
         } else if (skill === kOppositionServeAce) {
           si.ServeTotal++;
           si.Serve3++;
-          awayPlus.push(r);
-          awayServes.push(r);
+          si.listPlus.push(ev);
+          si.listServes.push(ev);
         } else if (skill === kOppositionServeError) {
           si.ServeTotal++;
           si.Serve0++;
-          awayMinus.push(r);
+          si.listMinus.push(ev);
         } else if (skill === kSkillOppositionServe) {
           si.ServeTotal++;
           var sgr = 2;
@@ -658,16 +686,16 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
           }
           if (sgr === 2) {
             si.Serve2++;
-            awayServes.push(r);
+            si.listServes.push(ev);
           } else if (sgr === 1) si.Serve1++;
         } else if (skill === kOppositionScore) {
           si.SpikeTotal++;
           si.Spike3++;
-          awayPlus.push(r);
+          si.listPlus.push(ev);
         } else if (skill === kOppositionHitError) {
           si.SpikeTotal++;
           si.Spike0++;
-          awayMinus.push(r);
+          si.listMinus.push(ev);
         } else if (skill === kSkillOppositionSpike) {
           si.SpikeTotal++;
           si.Spike2++;
@@ -676,75 +704,103 @@ function doCalculateStatsForRallies(rallies, selAps, selBps) {
     }
   }
 
-  for (const prop in dic)
-  {
-    var statsa = dic[prop]
+  for (const prop in dic) {
+    var statsa = dic[prop];
     statsa.Plus = statsa.Serve3 + statsa.Spike3 + statsa.Blck3;
-    statsa.Minus = statsa.Serve0 + statsa.Pass0 + statsa.Spike0 + statsa.Blck0 + statsa.Dig0
-    statsa.PositiveServe = statsa.Serve2 + statsa.Serve3 + statsa.Serve4
-    statsa.PassAverage = statsa.PassTotal === 0 ? 0 : (statsa.Pass1 + statsa.Pass2 * 2 + statsa.Pass3 * 3 + statsa.Pass05 * 0.5) / statsa.PassTotal
+    statsa.Minus =
+      statsa.Serve0 + statsa.Pass0 + statsa.Spike0 + statsa.Blck0 + statsa.Dig0;
+    statsa.PositiveServe = statsa.Serve2 + statsa.Serve3 + statsa.Serve4;
+    statsa.PassAverage =
+      statsa.PassTotal === 0
+        ? 0
+        : (statsa.Pass1 +
+            statsa.Pass2 * 2 +
+            statsa.Pass3 * 3 +
+            statsa.Pass05 * 0.5) /
+          statsa.PassTotal;
   }
 
   return dic;
 }
 
 export function addStats(statsa, statsb) {
-    statsa.Pass0 += statsb.Pass0
-    statsa.Pass05 += statsb.Pass05
-    statsa.Pass1 += statsb.Pass1
-    statsa.Pass2 += statsb.Pass2
-    statsa.Pass3 += statsb.Pass3
-    statsa.PassTotal += statsb.PassTotal
-    statsa.Serve0 += statsb.Serve0
-    statsa.Serve1 += statsb.Serve1
-    statsa.Serve2 += statsb.Serve2
-    statsa.Serve3 += statsb.Serve3
-    statsa.Serve4 += statsb.Serve4
-    statsa.ServeTotal += statsb.ServeTotal
-    statsa.ServeTotalSpeed += statsb.ServeTotalSpeed
-    statsa.Set0 += statsb.Set0
-    statsa.Set1 += statsb.Set1
-    statsa.Set2 += statsb.Set2
-    statsa.Set3 += statsb.Set3
-    statsa.Spike0 += statsb.Spike0
-    statsa.Spike1 += statsb.Spike1
-    statsa.Spike2 += statsb.Spike2
-    statsa.Spike3 += statsb.Spike3
-    statsa.SpikeTotal += statsb.SpikeTotal
-    statsa.SpikeBlocked += statsb.SpikeBlocked
-    statsa.Blck0 += statsb.Blck0
-    statsa.Blck1 += statsb.Blck1
-    statsa.Blck2 += statsb.Blck2
-    statsa.Blck3 += statsb.Blck3
-    statsa.Blck4 += statsb.Blck4
-    statsa.BlckSolo += statsb.BlckSolo
-    statsa.BlckAssist += statsb.BlckAssist
-    statsa.BHE += statsb.BHE
-    statsa.Dig += statsb.Dig
-    statsa.Dig0 += statsb.Dig0
-    statsa.Dig1 += statsb.Dig1
-    statsa.Dig2 += statsb.Dig2
-    statsa.Dig3 += statsb.Dig3
-    statsa.SetDuration += statsb.SetDuration
-    statsa.playTime += statsb.playTime
-    statsa.gamesPlayed += statsb.gamesPlayed
-    statsa.SideOuts += statsb.SideOuts
-    statsa.SideOutFails += statsb.SideOutFails
-    statsa.SideOutFirstBallFails += statsb.SideOutFirstBallFails
-    statsa.BreakPoints += statsb.BreakPoints
-    statsa.SideOutFirstBalls += statsb.SideOutFirstBalls
-    statsa.OppServeError += statsb.OppServeError
-    statsa.SideoutTotal += statsb.SideoutTotal
-    statsa.SideOutFirstBallKills += statsb.SideOutFirstBallKills
-    statsa.SideOutOn2s += statsb.SideOutOn2s
-    statsa.SideOutOn2Kills += statsb.SideOutOn2Kills
-    statsa.SideOutErrors += statsb.SideOutErrors
-    statsa.Plus += statsb.Plus
-    statsa.Minus += statsb.Minus
-    statsa.PositiveServe += statsb.PositiveServe
-    statsa.PassAverage = statsa.PassTotal === 0 ? 0 : (statsa.Pass1 + statsa.Pass2 * 2 + statsa.Pass3 * 3 + statsa.Pass05 * 0.5) / statsa.PassTotal
-    statsa.Points += statsb.Points
-    statsa.PointsLost += statsb.PointsLost
+  statsa.Pass0 += statsb.Pass0;
+  statsa.Pass05 += statsb.Pass05;
+  statsa.Pass1 += statsb.Pass1;
+  statsa.Pass2 += statsb.Pass2;
+  statsa.Pass3 += statsb.Pass3;
+  statsa.PassTotal += statsb.PassTotal;
+  statsa.Serve0 += statsb.Serve0;
+  statsa.Serve1 += statsb.Serve1;
+  statsa.Serve2 += statsb.Serve2;
+  statsa.Serve3 += statsb.Serve3;
+  statsa.Serve4 += statsb.Serve4;
+  statsa.ServeTotal += statsb.ServeTotal;
+  statsa.ServeTotalSpeed += statsb.ServeTotalSpeed;
+  statsa.Set0 += statsb.Set0;
+  statsa.Set1 += statsb.Set1;
+  statsa.Set2 += statsb.Set2;
+  statsa.Set3 += statsb.Set3;
+  statsa.Spike0 += statsb.Spike0;
+  statsa.Spike1 += statsb.Spike1;
+  statsa.Spike2 += statsb.Spike2;
+  statsa.Spike3 += statsb.Spike3;
+  statsa.SpikeTotal += statsb.SpikeTotal;
+  statsa.SpikeBlocked += statsb.SpikeBlocked;
+  statsa.Blck0 += statsb.Blck0;
+  statsa.Blck1 += statsb.Blck1;
+  statsa.Blck2 += statsb.Blck2;
+  statsa.Blck3 += statsb.Blck3;
+  statsa.Blck4 += statsb.Blck4;
+  statsa.BlckSolo += statsb.BlckSolo;
+  statsa.BlckAssist += statsb.BlckAssist;
+  statsa.BHE += statsb.BHE;
+  statsa.Dig += statsb.Dig;
+  statsa.Dig0 += statsb.Dig0;
+  statsa.Dig1 += statsb.Dig1;
+  statsa.Dig2 += statsb.Dig2;
+  statsa.Dig3 += statsb.Dig3;
+  statsa.SetDuration += statsb.SetDuration;
+  statsa.playTime += statsb.playTime;
+  statsa.gamesPlayed += statsb.gamesPlayed;
+  statsa.SideOuts += statsb.SideOuts;
+  statsa.SideOutFails += statsb.SideOutFails;
+  statsa.SideOutFirstBallFails += statsb.SideOutFirstBallFails;
+  statsa.BreakPoints += statsb.BreakPoints;
+  statsa.SideOutFirstBalls += statsb.SideOutFirstBalls;
+  statsa.OppServeError += statsb.OppServeError;
+  statsa.SideoutTotal += statsb.SideoutTotal;
+  statsa.SideOutFirstBallKills += statsb.SideOutFirstBallKills;
+  statsa.SideOutOn2s += statsb.SideOutOn2s;
+  statsa.SideOutOn2Kills += statsb.SideOutOn2Kills;
+  statsa.SideOutErrors += statsb.SideOutErrors;
+  statsa.Plus += statsb.Plus;
+  statsa.Minus += statsb.Minus;
+  statsa.PositiveServe += statsb.PositiveServe;
+  statsa.PassAverage =
+    statsa.PassTotal === 0
+      ? 0
+      : (statsa.Pass1 +
+          statsa.Pass2 * 2 +
+          statsa.Pass3 * 3 +
+          statsa.Pass05 * 0.5) /
+        statsa.PassTotal;
+  statsa.Points += statsb.Points;
+  statsa.PointsLost += statsb.PointsLost;
+
+  statsa.listSideouts.push(...statsb.listSideouts)
+  statsa.listSideoutErrors.push(...statsb.listSideoutErrors)
+  statsa.listSideoutFirstBalls.push(...statsb.listSideoutFirstBalls)
+  statsa.listSideoutTransitions.push(...statsb.listSideoutTransitions)
+  statsa.listSideoutOn2s.push(...statsb.listSideoutOn2s)
+  statsa.listPoints.push(...statsb.listPoints)
+  statsa.listPlus.push(...statsb.listPlus)
+  statsa.listMinus.push(...statsb.listMinus)
+  statsa.listPassAverage.push(...statsb.listPassAverage)
+  statsa.listBlocks.push(...statsb.listBlocks)
+  statsa.listDigs.push(...statsb.listDigs)
+  statsa.listAces.push(...statsb.listAces)
+  statsa.listServes.push(...statsb.listServes)
 }
 
 export function initStatsItem() {
@@ -752,6 +808,7 @@ export function initStatsItem() {
     // TrainingSession: match,
     // Drill:game,
     Player: null,
+    Team: null,
     Pass0: 0,
     Pass05: 0,
     Pass1: 0,
@@ -833,5 +890,19 @@ export function initStatsItem() {
     BlockOverallStatus: 0,
 
     Starts: [],
+
+    listSideouts: [],
+    listSideoutErrors: [],
+    listSideoutFirstBalls: [],
+    listSideoutTransitions: [],
+    listSideoutOn2s: [],
+    listPoints: [],
+    listPlus: [],
+    listMinus: [],
+    listPassAverage: [],
+    listBlocks: [],
+    listDigs: [],
+    listAces: [],
+    listServes: [],
   };
 }

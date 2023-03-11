@@ -13,7 +13,7 @@ function TeamSearch() {
     if (text === '') {
         toast.error("Please enter a team's name to search.");
     } else {
-      dispatch({ type: 'SET_LOADING' })
+      dispatch({ type: 'SET_LOADING', payload: {message:""} })
       const teams = await searchTeams(text)
       dispatch({ type: 'GET_TEAMS', payload: teams })
       setText('')

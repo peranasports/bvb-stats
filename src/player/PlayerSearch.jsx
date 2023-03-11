@@ -13,7 +13,7 @@ function PlayerSearch() {
     if (text === '') {
         toast.error("Please enter a player's name to search.");
     } else {
-      dispatch({ type: 'SET_LOADING' })
+      dispatch({ type: 'SET_LOADING', payload: {message:""} })
       const players = await searchPlayers(text)
       dispatch({ type: 'GET_PLAYERS', payload: players })
       setText('')

@@ -129,6 +129,7 @@ export function initWithZippedBuffer(zippeddata)
         else if (first3 === "PH~")
         {
             var pla = JSONparse(len3)
+            pla.countryCode = match.teamA.countryCode
             players[pla.guid] = pla
             match.teamA.players.push(pla)
             homeplayers.push(pla)
@@ -136,6 +137,7 @@ export function initWithZippedBuffer(zippeddata)
         else if (first3 === "PA~")
         {
             var plb = JSONparse(len3)
+            plb.countryCode = match.teamB.countryCode
             players[plb.guid] = plb
             match.teamB.players.push(plb)
         }

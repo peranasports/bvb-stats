@@ -161,6 +161,10 @@ export function dateToString(dt)
 
 export function eventGradeString(e) {
   const eg = e.eventGrade;
+  if (eg === undefined)
+  {
+    return "";
+  }
   if (e.isPointFive) {
     return "0.5";
   }

@@ -58,7 +58,12 @@ export const updateMatchVideoOffset = async (matchId, videoOffset) => {
 
   var config = {
     method: "put",
-    url: BVBSTATS_API_URL + "UpdateMatchVideoOffset?matchId=" + matchId + "&videoOffset=" + videoOffset,
+    url:
+      BVBSTATS_API_URL +
+      "UpdateMatchVideoOffset?matchId=" +
+      matchId +
+      "&videoOffset=" +
+      videoOffset,
     headers: {},
     data: data,
   };
